@@ -1,4 +1,4 @@
-package com.phone.listen;
+package com.phone.listen.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -14,6 +14,8 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.phone.listen.PhoneListenService;
+import com.phone.listen.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {

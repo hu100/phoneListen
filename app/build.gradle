@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin:'org.greenrobot.greendao'
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
@@ -25,6 +25,12 @@ android {
         targetCompatibility = '1.8'
     }
 
+    greendao{
+        schemaVersion 1
+        daoPackage 'com.phone.listen.greendao'
+        targetGenDir 'src/main/java'
+    }
+
     android.applicationVariants.all { variant ->
         variant.outputs.all { output ->
             def time = new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("GMT+08"))
@@ -35,8 +41,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/layoutlib.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/layoutlib.jar')
     //rxpermissions 6.0权限管理
     api 'com.github.tbruyelle:rxpermissions:0.10.2'
+    api 'org.greenrobot:greendao:3.2.2'
+    api 'org.greenrobot:greendao-generator:3.2.2'
 }

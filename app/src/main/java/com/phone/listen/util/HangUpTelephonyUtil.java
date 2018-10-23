@@ -1,4 +1,4 @@
-package com.phone.listen;
+package com.phone.listen.util;
 
 import android.content.Context;
 import android.os.RemoteException;
@@ -19,20 +19,20 @@ public class HangUpTelephonyUtil {
 
     public static boolean endCall(Context context, String incomingNumber) {
         if (!shouldIntercept(incomingNumber)) {
-            return true;
+            return false;
         }
-        boolean callSuccess = false;
+        boolean endCallSuccess = false;
         ITelephony telephonyService = getTelephonyService(context);
         try {
             if (telephonyService != null) {
-                callSuccess = telephonyService.endCall();
+                endCallSuccess = telephonyService.endCall();
             }
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (callSuccess == false) {
+        if (endCallSuccess == false) {
             Executor eS = Executors.newSingleThreadExecutor();
             eS.execute(new Runnable() {
                 @Override
@@ -40,9 +40,9 @@ public class HangUpTelephonyUtil {
                     disconnectCall();
                 }
             });
-            callSuccess = true;
+            endCallSuccess = true;
         }
-        return callSuccess;
+        return endCallSuccess;
     }
 
     private static boolean shouldIntercept(String incomingNumber) {
