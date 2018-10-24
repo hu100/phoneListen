@@ -7,13 +7,13 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class CallRecordBean {
     @Id(autoincrement = true)
-    private long id;
+    private Long id;
     private String number;
     private String date;//来电日期
     private String belongArea;//归属地
     private boolean intercepted;//是否被拦截
-    @Generated(hash = 1510099120)
-    public CallRecordBean(long id, String number, String date, String belongArea,
+    @Generated(hash = 2129327445)
+    public CallRecordBean(Long id, String number, String date, String belongArea,
             boolean intercepted) {
         this.id = id;
         this.number = number;
@@ -24,10 +24,10 @@ public class CallRecordBean {
     @Generated(hash = 727764067)
     public CallRecordBean() {
     }
-    public long getId() {
+    public Long getId() {
         return this.id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getNumber() {

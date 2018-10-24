@@ -18,12 +18,19 @@
         android:text="开启电话监听" />
 
     <Button
+        android:id="@+id/btn_phone_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="26sp"
+        android:layout_below="@id/register_service"
+        android:text="来电记录" />
+    <Button
         android:id="@+id/btn_exit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="26sp"
         android:visibility="gone"
-        android:layout_below="@id/register_service"
+        android:layout_below="@id/btn_phone_record"
         android:text="关闭监听并退出" />
 
     <TextView

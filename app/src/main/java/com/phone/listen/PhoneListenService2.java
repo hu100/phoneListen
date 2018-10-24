@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.webkit.WebView;
 
 import com.phone.listen.ui.MainActivity;
 
@@ -19,9 +20,9 @@ import com.phone.listen.ui.MainActivity;
  * 来去电监听服务
  */
 
-public class PhoneListenService extends Service {
+public class PhoneListenService2 extends Service {
 
-    public static final String TAG = PhoneListenService.class.getSimpleName();
+    public static final String TAG = PhoneListenService2.class.getSimpleName();
 
     public static final String ACTION_REGISTER_LISTENER = "action_register_listener";
 
@@ -29,7 +30,7 @@ public class PhoneListenService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate");
-//        initNotify();
+        initNotify();
     }
 
     @Override
@@ -37,15 +38,12 @@ public class PhoneListenService extends Service {
         Log.d(TAG, "onStartCommand action: " + intent.getAction() + " flags: " + flags + " startId: " + startId);
         String action = intent.getAction();
         if (action.equals(ACTION_REGISTER_LISTENER)) {
-            registerPhoneStateListener();
         }
-        Intent service = new Intent(this,PhoneListenService2.class);
-        service.setAction(ACTION_REGISTER_LISTENER);
-        startService(service);
         return super.onStartCommand(intent, flags, startId);
     }
 
     private void initNotify() {
+        WebView webView = new WebView(this);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this);
         Intent intent = new Intent(this, MainActivity.class);
@@ -62,8 +60,8 @@ public class PhoneListenService extends Service {
             builder.setChannelId(id);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            startForeground(1, builder.build());
-            notificationManager.notify(1, builder.build());
+            startForeground(2, builder.build());
+            notificationManager.notify(2, builder.build());
         }
     }
 
@@ -97,6 +95,5 @@ public class PhoneListenService extends Service {
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         super.onDestroy();
-        stopSelf();
     }
 }

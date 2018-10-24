@@ -37,14 +37,24 @@
             </intent-filter>
         </service>
 
-        <!--<receiver-->            <!--android:name=".PhoneStateReceiver"-->
-            <!--android:enabled="true">-->
-            <!--<intent-filter-->
-                <!--android:priority="1000">-->
-                <!--<action android:name="android.intent.action.NEW_OUTGOING_CALL"/>-->
-                <!--<action android:name="android.intent.action.PHONE_STATE"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <service
+            android:name=".PhoneListenService2"
+            android:label="守护进程"
+            android:process=":keepAlive">
+            <intent-filter android:priority="1000">
+                <action android:name="action.phone.listern"/>
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".PhoneStateReceiver"
+            android:enabled="true">
+            <intent-filter
+                android:priority="1000">
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
+                <action android:name="android.intent.action.PHONE_STATE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

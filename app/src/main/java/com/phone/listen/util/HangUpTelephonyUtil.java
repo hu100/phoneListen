@@ -1,8 +1,10 @@
 package com.phone.listen.util;
 
 import android.content.Context;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.Executors;
 
 public class HangUpTelephonyUtil {
 
+    static String TAG = "HangUpTelephonyUtil";
+
     public static boolean endCall(Context context, String incomingNumber) {
         if (!shouldIntercept(incomingNumber)) {
             return false;
@@ -26,10 +30,16 @@ public class HangUpTelephonyUtil {
         try {
             if (telephonyService != null) {
                 endCallSuccess = telephonyService.endCall();
+                Log.e(TAG, "endCall: " + endCallSuccess);
+                if (!endCallSuccess){
+                    endCall2();
+                }
             }
         } catch (RemoteException e) {
+            Log.e(TAG, "endCall remoteException: " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
+            Log.e(TAG, "endCalException: " + e.getMessage());
             e.printStackTrace();
         }
         if (endCallSuccess == false) {
@@ -37,7 +47,8 @@ public class HangUpTelephonyUtil {
             eS.execute(new Runnable() {
                 @Override
                 public void run() {
-                    disconnectCall();
+                    boolean b = disconnectCall();
+                    Log.e(TAG, "run: " + b);
                 }
             });
             endCallSuccess = true;
@@ -49,10 +60,11 @@ public class HangUpTelephonyUtil {
         if (incomingNumber == null) {
             return true;
         }
-        if (incomingNumber.startsWith("0") && !incomingNumber.substring(0, 3).equals("020")) {
+        if (incomingNumber.startsWith("0") && !incomingNumber.substring(0, 3).equals("000")) {
+            Log.e(TAG, "shouldIntercept: 拦截");
             return true;
         }
-        return false;
+        return true;
     }
 
     private static ITelephony getTelephonyService(Context context) {
@@ -114,6 +126,18 @@ public class HangUpTelephonyUtil {
             return false;
         }
         return true;
+    }
+
+    public static void endCall2(){
+        try {
+            Method method = Class.forName("android.os.ServiceManager").getMethod("getService", String.class);
+            IBinder binder = (IBinder) method.invoke(null, new Object[] { Context.TELEPHONY_SERVICE });
+            ITelephony telephony = ITelephony.Stub.asInterface(binder);
+            boolean endCall = telephony.endCall();
+            Log.e(TAG, "endCall2: " + endCall);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

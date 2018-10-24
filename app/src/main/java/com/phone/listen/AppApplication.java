@@ -1,7 +1,9 @@
 package com.phone.listen;
 
 import android.app.Application;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.multidex.MultiDex;
 
 import com.phone.listen.greendao.DaoMaster;
 import com.phone.listen.greendao.DaoSession;
@@ -17,6 +19,11 @@ public class AppApplication extends Application {
         super.onCreate();
         instance = this;
         setDateBase();
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     public static AppApplication getInstance(){
