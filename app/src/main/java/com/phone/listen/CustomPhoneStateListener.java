@@ -61,9 +61,9 @@ public class CustomPhoneStateListener extends PhoneStateListener {
                 recordBean.setTime(time);
                 if (incomingNumber.startsWith("0")) {
                     TelephoneNumberZone numberZone = queryCityByZone(incomingNumber.substring(0, 3));
-                    if (numberZone != null && numberZone.getCity()!= null) {
+                    if (numberZone != null && numberZone.getCity() != null) {
                         recordBean.setBelongArea(numberZone.getCity());
-                    }else {
+                    } else {
                         recordBean.setBelongArea("中国");
                     }
                 } else {
@@ -91,47 +91,12 @@ public class CustomPhoneStateListener extends PhoneStateListener {
         if (zone == null || zone.length() < 3) {
             return null;
         }
-        TelephoneNumberZone numberZone = null;
-        String city;
-        if (zone.length() == 3) {
-            switch (zone) {
-                case "010":
-                    city = "北京";
-                    break;
-                case "020":
-                    city = "广东广州";
-                    break;
-                case "021":
-                    city = "上海";
-                    break;
-                case "022":
-                    city = "天津";
-                    break;
-                case "023":
-                    city = "重庆";
-                    break;
-                case "024":
-                    city = "辽宁沈阳";
-                    break;
-                case "025":
-                    city = "江西南京";
-                case "027":
-                    city = "湖北武汉";
-                case "028":
-                    city = "四川成都";
-                case "029":
-                    city = "陕西西安";
-                    break;
-                default:
-                    city = null;
-            }
-            if (city != null) {
-                numberZone = new TelephoneNumberZone(null,zone,city);
-            }
-        } else {
-            numberZone = mZoneDao.queryBuilder().where(TelephoneNumberZoneDao.Properties.Zone.eq(zone.substring(0, 4))).unique();
+        try {
+            TelephoneNumberZone numberZone = mZoneDao.queryBuilder().where(TelephoneNumberZoneDao.Properties.Zone.eq(zone.substring(0, 4))).unique();
+            return numberZone;
+        } catch (Exception e) {
+            return null;
         }
-        return numberZone;
     }
 
     private boolean shouldIntercept(String incomingNumber) {
