@@ -25,10 +25,13 @@ public class CallRecordBeanDao extends AbstractDao<CallRecordBean, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Number = new Property(1, String.class, "number", false, "NUMBER");
-        public final static Property Date = new Property(2, String.class, "date", false, "DATE");
-        public final static Property BelongArea = new Property(3, String.class, "belongArea", false, "BELONG_AREA");
-        public final static Property Intercepted = new Property(4, boolean.class, "intercepted", false, "INTERCEPTED");
+        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
+        public final static Property Number = new Property(2, String.class, "number", false, "NUMBER");
+        public final static Property Date = new Property(3, String.class, "date", false, "DATE");
+        public final static Property Time = new Property(4, String.class, "time", false, "TIME");
+        public final static Property BelongArea = new Property(5, String.class, "belongArea", false, "BELONG_AREA");
+        public final static Property NeedIntercept = new Property(6, boolean.class, "needIntercept", false, "NEED_INTERCEPT");
+        public final static Property Intercepted = new Property(7, boolean.class, "intercepted", false, "INTERCEPTED");
     }
 
 
@@ -45,10 +48,13 @@ public class CallRecordBeanDao extends AbstractDao<CallRecordBean, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"CALL_RECORD_BEAN\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NUMBER\" TEXT," + // 1: number
-                "\"DATE\" TEXT," + // 2: date
-                "\"BELONG_AREA\" TEXT," + // 3: belongArea
-                "\"INTERCEPTED\" INTEGER NOT NULL );"); // 4: intercepted
+                "\"NAME\" TEXT," + // 1: name
+                "\"NUMBER\" TEXT," + // 2: number
+                "\"DATE\" TEXT," + // 3: date
+                "\"TIME\" TEXT," + // 4: time
+                "\"BELONG_AREA\" TEXT," + // 5: belongArea
+                "\"NEED_INTERCEPT\" INTEGER NOT NULL ," + // 6: needIntercept
+                "\"INTERCEPTED\" INTEGER NOT NULL );"); // 7: intercepted
     }
 
     /** Drops the underlying database table. */
@@ -66,21 +72,32 @@ public class CallRecordBeanDao extends AbstractDao<CallRecordBean, Long> {
             stmt.bindLong(1, id);
         }
  
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(2, name);
+        }
+ 
         String number = entity.getNumber();
         if (number != null) {
-            stmt.bindString(2, number);
+            stmt.bindString(3, number);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(3, date);
+            stmt.bindString(4, date);
+        }
+ 
+        String time = entity.getTime();
+        if (time != null) {
+            stmt.bindString(5, time);
         }
  
         String belongArea = entity.getBelongArea();
         if (belongArea != null) {
-            stmt.bindString(4, belongArea);
+            stmt.bindString(6, belongArea);
         }
-        stmt.bindLong(5, entity.getIntercepted() ? 1L: 0L);
+        stmt.bindLong(7, entity.getNeedIntercept() ? 1L: 0L);
+        stmt.bindLong(8, entity.getIntercepted() ? 1L: 0L);
     }
 
     @Override
@@ -92,21 +109,32 @@ public class CallRecordBeanDao extends AbstractDao<CallRecordBean, Long> {
             stmt.bindLong(1, id);
         }
  
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(2, name);
+        }
+ 
         String number = entity.getNumber();
         if (number != null) {
-            stmt.bindString(2, number);
+            stmt.bindString(3, number);
         }
  
         String date = entity.getDate();
         if (date != null) {
-            stmt.bindString(3, date);
+            stmt.bindString(4, date);
+        }
+ 
+        String time = entity.getTime();
+        if (time != null) {
+            stmt.bindString(5, time);
         }
  
         String belongArea = entity.getBelongArea();
         if (belongArea != null) {
-            stmt.bindString(4, belongArea);
+            stmt.bindString(6, belongArea);
         }
-        stmt.bindLong(5, entity.getIntercepted() ? 1L: 0L);
+        stmt.bindLong(7, entity.getNeedIntercept() ? 1L: 0L);
+        stmt.bindLong(8, entity.getIntercepted() ? 1L: 0L);
     }
 
     @Override
@@ -118,10 +146,13 @@ public class CallRecordBeanDao extends AbstractDao<CallRecordBean, Long> {
     public CallRecordBean readEntity(Cursor cursor, int offset) {
         CallRecordBean entity = new CallRecordBean( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // number
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // date
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // belongArea
-            cursor.getShort(offset + 4) != 0 // intercepted
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // number
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // date
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // time
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // belongArea
+            cursor.getShort(offset + 6) != 0, // needIntercept
+            cursor.getShort(offset + 7) != 0 // intercepted
         );
         return entity;
     }
@@ -129,10 +160,13 @@ public class CallRecordBeanDao extends AbstractDao<CallRecordBean, Long> {
     @Override
     public void readEntity(Cursor cursor, CallRecordBean entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setNumber(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setDate(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setBelongArea(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setIntercepted(cursor.getShort(offset + 4) != 0);
+        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setNumber(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setDate(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setTime(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setBelongArea(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setNeedIntercept(cursor.getShort(offset + 6) != 0);
+        entity.setIntercepted(cursor.getShort(offset + 7) != 0);
      }
     
     @Override

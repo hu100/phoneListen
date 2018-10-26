@@ -1,1 +1,1 @@
-include ':app', ':backgroundService'
+include ':app'

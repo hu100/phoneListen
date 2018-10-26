@@ -16,7 +16,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.phone.listen.ui.MainActivity;
+import com.phone.listen.ui.MainActivity_;
 
 /**
  * 来去电监听服务
@@ -65,7 +65,7 @@ public class PhoneListenService extends NotificationListenerService {
     private void initNotify() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this);
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity_.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 66, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setSmallIcon(R.drawable.ic_logo)
                 .setContentTitle("监听中...")

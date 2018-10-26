@@ -5,30 +5,53 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.text.TextUtils;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.phone.listen.PhoneListenService;
+import com.phone.listen.AppApplication;
 import com.phone.listen.R;
 import com.phone.listen.base.BaseActivity;
+import com.phone.listen.bean.TelephoneNumberZone;
+import com.phone.listen.bean.WhiteListBean;
+import com.phone.listen.greendao.TelephoneNumberZoneDao;
+import com.phone.listen.util.PreferenceUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+@EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     String TAG = "MainActivity";
-    private Button mBtnRegister;
-    private TextView mTvDescription;
-    private Button mBtnExit;
-    RxPermissions rxPermissions;
 
+    @ViewById(R.id.activity_main)
+    LinearLayout mActivityMain;
+    @ViewById(R.id.vp_main)
+    ViewPager mVpMain;
+    @ViewById(R.id.tab)
+    TabLayout mTab;
+
+    RxPermissions rxPermissions;
     //需要检查的权限
     private final String[] mPermissionList = new String[]{
             //获取电话状态
@@ -41,17 +64,82 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mBtnRegister = findViewById(R.id.register_service);
-        mBtnExit = findViewById(R.id.btn_exit);
-        mTvDescription = findViewById(R.id.tv_description);
-        mTvDescription.setOnClickListener(this::onClick);
-        mBtnRegister.setOnClickListener(this);
-        mBtnExit.setOnClickListener(this);
         rxPermissions = new RxPermissions(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermissionAndThenLoad();
         }
+    }
+
+    @AfterViews
+    public void init() {
+        initViewPage();
+        initNumberZone();
+    }
+
+    @Background
+    public void initNumberZone() {
+        if (PreferenceUtils.getInstance(this).getFirstStart()) {
+            PreferenceUtils.getInstance(this).setFirstStart(true);
+            //默认不拦截1开头的手机号码
+            WhiteListBean bean = new WhiteListBean(null, "", "1", 1, "");
+            AppApplication.getInstance().getDaoSession().getWhiteListBeanDao().insert(bean);
+            //往数据库写入区号
+            TelephoneNumberZoneDao zoneDao = AppApplication.getInstance().getDaoSession().getTelephoneNumberZoneDao();
+            AssetManager assets = getResources().getAssets();
+            try {
+                InputStream is = assets.open("zone.json");
+                int size = is.available();
+                byte[] bytes = new byte[size];
+                is.read(bytes);
+                is.close();
+                String content = new String(bytes);
+                Log.e("hhh", "initNumberZone:" + content);
+                JSONArray jsonArray = new JSONArray(content);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String city = jsonArray.getJSONObject(i).optString("city", "中国");
+                    String zone = jsonArray.getJSONObject(i).getString("zone");
+                    TelephoneNumberZone numberZone = new TelephoneNumberZone(null, zone, city);
+                    zoneDao.insert(numberZone);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initViewPage() {
+        List<String> tabTexts = new ArrayList<>();
+        tabTexts.add("首页");
+        tabTexts.add("记录");
+        tabTexts.add("设置");
+        List<Fragment> fragmentList = new ArrayList<>();
+        fragmentList.add(new MainFragment_());
+        fragmentList.add(new PhoneRecordFragment_());
+        fragmentList.add(new InterceptSettingFragment_());
+        mTab.addTab(mTab.newTab());
+        mTab.addTab(mTab.newTab());
+        mTab.addTab(mTab.newTab());
+        mVpMain.setOffscreenPageLimit(6);
+        mVpMain.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return fragmentList.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return fragmentList.size();
+            }
+
+            @Nullable
+            @Override
+            public CharSequence getPageTitle(int position) {
+                return tabTexts.get(position);
+            }
+        });
+        mTab.setupWithViewPager(mVpMain);
     }
 
     @SuppressLint("CheckResult")
@@ -67,46 +155,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        final int viewId = v.getId();
-        switch (viewId) {
-            case R.id.register_service:
-                mBtnRegister.setText("正在监听");
-                mBtnRegister.setBackgroundColor(Color.GREEN);
-                mTvDescription.setVisibility(View.VISIBLE);
-                mBtnExit.setVisibility(View.VISIBLE);
-                registerPhoneStateListener();
-                if (!isEnabled()) {
-                    openNotificationListenSettings();
-                }
-                break;
-            case R.id.btn_exit:
-                openNotificationListenSettings();
-                finish();
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(0);
-                break;
-            case R.id.tv_description:
-                openNotificationListenSettings();
-                break;
-        }
-    }
-
-    //判断是否有通知使用权
-    private boolean isEnabled() {
-        String str = getPackageName();
-        String localObject = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
-        if (!TextUtils.isEmpty(localObject)) {
-            Log.e(TAG, "isEnabled:" + localObject);
-            String[] strArr = (localObject).split(":");
-            int i = 0;
-            while (i < strArr.length) {
-                ComponentName localComponentName = ComponentName.unflattenFromString(strArr[i]);
-                if ((localComponentName != null) && (TextUtils.equals(str, localComponentName.getPackageName())))
-                    return true;
-                i += 1;
-            }
-        }
-        return false;
     }
 
     private void startOtherApp(Context context) {
@@ -115,27 +163,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ComponentName cn = new ComponentName("com.phone.hangup", "com.phone.hangup.MainActivity");
         intent.setComponent(cn);
         context.startActivity(intent);
-    }
-
-    private void openNotificationListenSettings() {
-        try {
-            Intent intent;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            } else {
-                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            }
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void registerPhoneStateListener() {
-        Intent intent = new Intent(this, PhoneListenService.class);
-        intent.setAction(PhoneListenService.ACTION_REGISTER_LISTENER);
-        startService(intent);
     }
 
     @Override

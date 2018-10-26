@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin:'org.greenrobot.greendao'
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.phone.listen"
         minSdkVersion 18
@@ -10,6 +10,12 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                //这里的包名和applicationId一致
+                arguments = ['resourcePackageName': "com.phone.listen"]
+            }
+        }
     }
 
     buildTypes {
@@ -41,13 +47,18 @@ android {
     }
 }
 
+def AAVersion = '4.5.2'
+
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/layoutlib.jar')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api files('libs/layoutlib.jar')
     //rxpermissions 6.0权限管理
     api 'com.github.tbruyelle:rxpermissions:0.10.2'
     api 'org.greenrobot:greendao:3.2.2'
     api 'org.greenrobot:greendao-generator:3.2.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.android.support:multidex:1.0.3'
+    annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
+    implementation "org.androidannotations:androidannotations-api:$AAVersion"
+    implementation 'com.android.support:design:27.1.1'
 }

@@ -22,9 +22,6 @@ public class HangUpTelephonyUtil {
     static String TAG = "HangUpTelephonyUtil";
 
     public static boolean endCall(Context context, String incomingNumber) {
-        if (!shouldIntercept(incomingNumber)) {
-            return false;
-        }
         boolean endCallSuccess = false;
         ITelephony telephonyService = getTelephonyService(context);
         try {
@@ -52,17 +49,6 @@ public class HangUpTelephonyUtil {
             });
         }
         return endCallSuccess;
-    }
-
-    private static boolean shouldIntercept(String incomingNumber) {
-        if (incomingNumber == null) {
-            return true;
-        }
-        if (incomingNumber.startsWith("0") && !incomingNumber.substring(0, 3).equals("000")) {
-            Log.e(TAG, "shouldIntercept: 拦截");
-            return true;
-        }
-        return false;
     }
 
     private static ITelephony getTelephonyService(Context context) {
