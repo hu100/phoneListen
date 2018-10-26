@@ -2,15 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin:'org.greenrobot.greendao'
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.phone.listen"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//        multiDexEnabled true
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -49,6 +48,6 @@ dependencies {
     api 'com.github.tbruyelle:rxpermissions:0.10.2'
     api 'org.greenrobot:greendao:3.2.2'
     api 'org.greenrobot:greendao-generator:3.2.2'
-//    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.android.support:multidex:1.0.3'
 }

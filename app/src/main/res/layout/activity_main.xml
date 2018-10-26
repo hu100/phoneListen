@@ -22,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="26sp"
+        android:visibility="gone"
         android:layout_below="@id/register_service"
         android:text="来电记录" />
     <Button

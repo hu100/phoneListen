@@ -32,7 +32,7 @@ public class HangUpTelephonyUtil {
                 endCallSuccess = telephonyService.endCall();
                 Log.e(TAG, "endCall: " + endCallSuccess);
                 if (!endCallSuccess){
-                    endCall2();
+                    endCallSuccess = endCall2();
                 }
             }
         } catch (RemoteException e) {
@@ -47,11 +47,9 @@ public class HangUpTelephonyUtil {
             eS.execute(new Runnable() {
                 @Override
                 public void run() {
-                    boolean b = disconnectCall();
-                    Log.e(TAG, "run: " + b);
+                   disconnectCall();
                 }
             });
-            endCallSuccess = true;
         }
         return endCallSuccess;
     }
@@ -64,7 +62,7 @@ public class HangUpTelephonyUtil {
             Log.e(TAG, "shouldIntercept: 拦截");
             return true;
         }
-        return true;
+        return false;
     }
 
     private static ITelephony getTelephonyService(Context context) {
@@ -128,15 +126,17 @@ public class HangUpTelephonyUtil {
         return true;
     }
 
-    public static void endCall2(){
+    public static boolean endCall2(){
         try {
             Method method = Class.forName("android.os.ServiceManager").getMethod("getService", String.class);
             IBinder binder = (IBinder) method.invoke(null, new Object[] { Context.TELEPHONY_SERVICE });
             ITelephony telephony = ITelephony.Stub.asInterface(binder);
             boolean endCall = telephony.endCall();
             Log.e(TAG, "endCall2: " + endCall);
+            return endCall;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
