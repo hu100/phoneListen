@@ -7,9 +7,13 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
+import com.phone.listen.bean.TelephoneNumberZone;
+import com.phone.listen.bean.WhiteListBean;
+import com.phone.listen.greendao.TelephoneNumberZoneDao;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -17,18 +21,18 @@ import java.util.concurrent.Executors;
  * 封装挂断电话接口
  */
 
-public class HangUpTelephonyUtil {
+public class TelephonyUtil {
 
-    static String TAG = "HangUpTelephonyUtil";
+    static String TAG = "TelephonyUtil";
 
-    public static boolean endCall(Context context, String incomingNumber) {
+    public static boolean endCall(Context context) {
         boolean endCallSuccess = false;
         ITelephony telephonyService = getTelephonyService(context);
         try {
             if (telephonyService != null) {
                 endCallSuccess = telephonyService.endCall();
                 Log.e(TAG, "endCall: " + endCallSuccess);
-                if (!endCallSuccess){
+                if (!endCallSuccess) {
                     endCallSuccess = endCall2();
                 }
             }
@@ -44,7 +48,7 @@ public class HangUpTelephonyUtil {
             eS.execute(new Runnable() {
                 @Override
                 public void run() {
-                   disconnectCall();
+                    disconnectCall();
                 }
             });
         }
@@ -112,10 +116,10 @@ public class HangUpTelephonyUtil {
         return true;
     }
 
-    public static boolean endCall2(){
+    public static boolean endCall2() {
         try {
             Method method = Class.forName("android.os.ServiceManager").getMethod("getService", String.class);
-            IBinder binder = (IBinder) method.invoke(null, new Object[] { Context.TELEPHONY_SERVICE });
+            IBinder binder = (IBinder) method.invoke(null, new Object[]{Context.TELEPHONY_SERVICE});
             ITelephony telephony = ITelephony.Stub.asInterface(binder);
             boolean endCall = telephony.endCall();
             Log.e(TAG, "endCall2: " + endCall);
@@ -123,6 +127,44 @@ public class HangUpTelephonyUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public static boolean shouldIntercept(List<WhiteListBean> whiteList, String incomingNumber) {
+        if (incomingNumber == null) {
+            return true;
+        }
+        if (incomingNumber.startsWith("0")) {
+            if (whiteList == null) return true;
+            for (WhiteListBean bean : whiteList) {
+                if (bean.getNumber().equals(incomingNumber.substring(0, bean.getLen()))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*
+     * 通过区号查城市
+     * */
+    public static TelephoneNumberZone queryCityByZone(String zone, TelephoneNumberZoneDao zoneDao) throws Exception {
+        if (zone == null || zone.length() < 3) {
+            throw new Exception("被查询的区号长度小于3");
+        }
+        String prefix;
+        if (zone.startsWith("01") || zone.startsWith("02")) {
+            prefix = zone.substring(0, 3);
+        } else {
+            prefix = zone.substring(0, 4);
+        }
+        List<TelephoneNumberZone> zones = zoneDao.queryBuilder().where(TelephoneNumberZoneDao.Properties.Zone.eq(prefix)).build().list();
+        if (zones != null && zones.size() > 0) {
+            return zones.get(0);
+        } else {
+            return null;
         }
     }
 

@@ -1,11 +1,16 @@
-package com.phone.listen;
+package com.phone.listen.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 
-import com.phone.listen.util.HangUpTelephonyUtil;
+import com.phone.listen.util.Constant;
+import com.phone.listen.util.FileUtil;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by popfisher on 2017/11/6.
@@ -32,7 +37,10 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             String extraIncomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
             if (state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING)) {
-                HangUpTelephonyUtil.endCall(context,extraIncomingNumber);
+//                TelephonyUtil.endCall(context);
+                DateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+                String time = format.format(new Date());
+                FileUtil.writeToFile(Constant.LOG_PATH, "记录.txt", time + "      " + extraIncomingNumber, true);
             }
         }
     }

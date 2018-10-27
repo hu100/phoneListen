@@ -1,4 +1,4 @@
-package com.phone.listen;
+package com.phone.listen.service;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -16,6 +16,8 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.phone.listen.listener.CustomPhoneStateListener;
+import com.phone.listen.R;
 import com.phone.listen.ui.MainActivity_;
 
 /**

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.phone.listen.AppApplication;
 import com.phone.listen.R;
 import com.phone.listen.adapter.CommonAdapter;
-import com.phone.listen.adapter.OnItemClickListener;
+import com.phone.listen.listener.OnItemClickListener;
 import com.phone.listen.adapter.ViewHolder;
 import com.phone.listen.base.BaseFragment;
 import com.phone.listen.bean.CallRecordBean;

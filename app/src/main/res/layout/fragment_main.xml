@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:text="固定电话不是广州的号码都会被拦截,手机号码不拦截"
+        android:text="不拦截手机号码，只拦截座机号码，可以到设置界面设置拦截规则"
         android:textSize="26sp"
         android:visibility="gone"
         tools:visibility="visible"/>

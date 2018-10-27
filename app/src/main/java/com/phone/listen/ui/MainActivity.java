@@ -80,11 +80,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void initNumberZone() {
         if (PreferenceUtils.getInstance(this).getFirstStart()) {
             PreferenceUtils.getInstance(this).setFirstStart(true);
-            //默认不拦截1开头的手机号码
-            WhiteListBean bean = new WhiteListBean(null, "", "1", 1, "");
+            WhiteListBean bean = new WhiteListBean(null, "", "020", 3, "广东广州");
             AppApplication.getInstance().getDaoSession().getWhiteListBeanDao().insert(bean);
             //往数据库写入区号
             TelephoneNumberZoneDao zoneDao = AppApplication.getInstance().getDaoSession().getTelephoneNumberZoneDao();
+            zoneDao.deleteAll();
             AssetManager assets = getResources().getAssets();
             try {
                 InputStream is = assets.open("zone.json");

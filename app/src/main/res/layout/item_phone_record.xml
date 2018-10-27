@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="号码归属地"
-            android:textColor="@color/black"
+            android:textColor="@color/gray_8"
             android:textSize="@dimen/text_size_18" />
     </LinearLayout>
 
@@ -64,7 +64,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="来电日期"
-            android:textColor="@color/black"
+            android:textColor="@color/gray_8"
             android:textSize="@dimen/text_size_18" />
 
         <TextView
@@ -74,7 +74,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="来电时间"
-            android:textColor="@color/black"
+            android:textColor="@color/gray_8"
             android:textSize="@dimen/text_size_18" />
     </LinearLayout>
 

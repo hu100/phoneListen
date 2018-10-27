@@ -20,6 +20,7 @@ public class AppApplication extends Application {
         instance = this;
         setDateBase();
     }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);

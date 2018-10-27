@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.phone.listen.PhoneListenService;
 import com.phone.listen.R;
 import com.phone.listen.base.BaseFragment;
+import com.phone.listen.service.PhoneListenService;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -43,6 +43,7 @@ public class MainFragment extends BaseFragment {
                 mBtnRegisterService.setText("正在监听");
                 mBtnRegisterService.setBackgroundColor(getResources().getColor(R.color.green_bg));
                 mBtnExit.setVisibility(View.VISIBLE);
+                mTvDescription.setVisibility(View.VISIBLE);
                 registerPhoneStateListener();
                 if (!isEnabled()) {
                     openNotificationListenSettings();
@@ -50,6 +51,7 @@ public class MainFragment extends BaseFragment {
                 break;
             case R.id.btn_exit:
                 openNotificationListenSettings();
+                getActivity().finish();
                 android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(0);
                 break;

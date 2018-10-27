@@ -155,17 +155,18 @@ public class FileUtil {
 
 
     //写入存储
-    public static String writeToFile(String fileDir, String content, String fileName) {
+    public static String writeToFile(String fileDir,String fileName, String content, boolean append) {
+        File dir = new File(fileDir);
+        if (!dir.exists()){
+            dir.mkdirs();
+        }
         String path = fileDir + "/" + fileName;
         File file = new File(path);
-        if (file.exists()) {
-            delete(file);
-        }
         try {
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
+            FileOutputStream fos = new FileOutputStream(file,append);
             byte[] bytes = content.getBytes();
             fos.write(bytes);
+            fos.write("\r\n".getBytes());
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
