@@ -88,6 +88,7 @@ public class InterceptSettingFragment extends BaseFragment {
 
     private void insertWhiteNum() {
         String num = mEtNumber.getText().toString().trim();
+        if (num.length() == 0) return;
         mEtNumber.setText("");
         WhiteListBean bean = new WhiteListBean(null, "", num, num.length(), "");
         mWhiteList.add(bean);

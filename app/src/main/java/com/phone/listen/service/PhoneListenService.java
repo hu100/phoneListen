@@ -7,17 +7,21 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.phone.listen.listener.CustomPhoneStateListener;
 import com.phone.listen.R;
+import com.phone.listen.listener.CustomPhoneStateListener;
+import com.phone.listen.listener.ScreenListener;
+import com.phone.listen.receiver.ScreenReceiver;
 import com.phone.listen.ui.MainActivity_;
 
 /**
@@ -28,14 +32,42 @@ import com.phone.listen.ui.MainActivity_;
 public class PhoneListenService extends NotificationListenerService {
 
     public final String TAG = getClass().getSimpleName();
-
+    private static final int NOTIFY_ID = 236;
+    private static final int NOTIFY_ID2 = 237;
     public static final String ACTION_REGISTER_LISTENER = "action_register_listener";
+    private NotificationManager mNotificationManager;
+    private Notification mNotification;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.e(TAG, "onCreate");
         initNotify();
+        initScreenReceiver();
+    }
+
+    private void initScreenReceiver() {
+        ScreenReceiver screenReceiver = new ScreenReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(screenReceiver, filter);
+        screenReceiver.setScreenListener(new ScreenListener() {
+            @Override
+            public void onScreenOn() {
+                mNotificationManager.cancel(NOTIFY_ID2);
+            }
+
+            @Override
+            public void onScreenOff() {
+                mNotificationManager.notify(NOTIFY_ID2, mNotification);
+            }
+
+            @Override
+            public void onUserPresent() {
+            }
+        });
     }
 
     @Override
@@ -65,24 +97,33 @@ public class PhoneListenService extends NotificationListenerService {
     }
 
     private void initNotify() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this);
         Intent intent = new Intent(this, MainActivity_.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 66, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setSmallIcon(R.drawable.ic_logo)
                 .setContentTitle("监听中...")
                 .setContentText("正在拦截骚扰电话")
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .setVibrate(new long[]{0})
+                .setSound(null)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE);
         if (Build.VERSION.SDK_INT >= 26) {
             String id = "my_channel_01";
             String name = "我是渠道名字";
             NotificationChannel mChannel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(mChannel);
+            mChannel.enableLights(false);
+            mChannel.enableVibration(false);
+            mChannel.setVibrationPattern(new long[]{0});
+            mChannel.setSound(null, null);
+            mNotificationManager.createNotificationChannel(mChannel);
             builder.setChannelId(id);
         }
+        mNotification = builder.build();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            startForeground(1, builder.build());
-            notificationManager.notify(1, builder.build());
+            startForeground(NOTIFY_ID, mNotification);
+            mNotificationManager.notify(NOTIFY_ID, mNotification);
         }
     }
 
