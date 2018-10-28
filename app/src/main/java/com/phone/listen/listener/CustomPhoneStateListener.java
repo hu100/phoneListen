@@ -9,6 +9,7 @@ import android.util.Log;
 import com.phone.listen.AppApplication;
 import com.phone.listen.bean.CallRecordBean;
 import com.phone.listen.bean.TelephoneNumberZone;
+import com.phone.listen.greendao.BlackListBeanDao;
 import com.phone.listen.greendao.CallRecordBeanDao;
 import com.phone.listen.greendao.TelephoneNumberZoneDao;
 import com.phone.listen.greendao.WhiteListBeanDao;
@@ -29,11 +30,13 @@ public class CustomPhoneStateListener extends PhoneStateListener {
     private final CallRecordBeanDao mRecordBeanDao;
     private final WhiteListBeanDao mWhiteListDao;
     private final TelephoneNumberZoneDao mZoneDao;
+    private final BlackListBeanDao mBlacklistDao;
 
     public CustomPhoneStateListener(Context context) {
         mContext = context;
         mRecordBeanDao = AppApplication.getInstance().getDaoSession().getCallRecordBeanDao();
         mWhiteListDao = AppApplication.getInstance().getDaoSession().getWhiteListBeanDao();
+        mBlacklistDao = AppApplication.getInstance().getDaoSession().getBlackListBeanDao();
         mZoneDao = AppApplication.getInstance().getDaoSession().getTelephoneNumberZoneDao();
     }
 
@@ -76,7 +79,7 @@ public class CustomPhoneStateListener extends PhoneStateListener {
         } else {
             recordBean.setBelongArea("中国");
         }
-        if (TelephonyUtil.shouldIntercept(mWhiteListDao.loadAll(), incomingNumber)) {
+        if (TelephonyUtil.shouldIntercept(mWhiteListDao.loadAll(),mBlacklistDao.loadAll(),incomingNumber)) {
             boolean endCall = TelephonyUtil.endCall(mContext);
             recordBean.setIntercepted(endCall);
             recordBean.setNeedIntercept(true);

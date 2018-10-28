@@ -1,4 +1,4 @@
-package com.phone.listen.ui;
+package com.phone.listen.ui.fragment;
 
 import android.graphics.Color;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -44,7 +44,7 @@ public class PhoneRecordFragment extends BaseFragment {
         mRvPhoneRecord.setItemAnimator(new DefaultItemAnimator());
         mCallRecordAdapter = new CommonAdapter<CallRecordBean>(mContext, R.layout.item_phone_record, mRecordList) {
             @Override
-            public void convert(ViewHolder holder, CallRecordBean bean) {
+            public void convert(ViewHolder holder, CallRecordBean bean,int position) {
                 holder.setText(R.id.phone_number, bean.getNumber())
                         .setText(R.id.number_area, bean.getBelongArea())
                         .setText(R.id.phone_date, bean.getDate())

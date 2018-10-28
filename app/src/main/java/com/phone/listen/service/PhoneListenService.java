@@ -51,12 +51,16 @@ public class PhoneListenService extends NotificationListenerService {
         Log.e(TAG, "onCreate");
         initNotify();
         initScreenReceiver();
+//        startHeartbeat();
+    }
+
+    private void startHeartbeat() {
         new Thread(() -> {
             while (true) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 FileUtil.writeToFile(Constant.LOG_PATH, "心跳.txt", sdf.format(new Date()), true);
                 try {
-                    Thread.sleep(1000 * 60 * 10);
+                    Thread.sleep(1000 * 60 * 5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -187,7 +191,8 @@ public class PhoneListenService extends NotificationListenerService {
     @Override
     public void onDestroy() {
         Log.e(TAG, "onDestroy");
-        super.onDestroy();
+        mNotificationManager.cancel(NOTIFY_ID);
         stopSelf();
+        super.onDestroy();
     }
 }

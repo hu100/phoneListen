@@ -13,7 +13,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -24,6 +23,9 @@ import com.phone.listen.base.BaseActivity;
 import com.phone.listen.bean.TelephoneNumberZone;
 import com.phone.listen.bean.WhiteListBean;
 import com.phone.listen.greendao.TelephoneNumberZoneDao;
+import com.phone.listen.ui.fragment.InterceptSettingFragment_;
+import com.phone.listen.ui.fragment.MainFragment_;
+import com.phone.listen.ui.fragment.PhoneRecordFragment_;
 import com.phone.listen.util.PreferenceUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
@@ -59,7 +61,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Manifest.permission.CALL_PHONE,
             Manifest.permission.PROCESS_OUTGOING_CALLS,
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WAKE_LOCK
     };
 
     @Override
@@ -94,7 +95,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 is.read(bytes);
                 is.close();
                 String content = new String(bytes);
-                Log.e("hhh", "initNumberZone:" + content);
                 JSONArray jsonArray = new JSONArray(content);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     String city = jsonArray.getJSONObject(i).optString("city", "中国");

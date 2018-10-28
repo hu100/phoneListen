@@ -7,6 +7,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
+import com.phone.listen.bean.BlackListBean;
 import com.phone.listen.bean.TelephoneNumberZone;
 import com.phone.listen.bean.WhiteListBean;
 import com.phone.listen.greendao.TelephoneNumberZoneDao;
@@ -127,21 +128,32 @@ public class TelephonyUtil {
         }
     }
 
-    public static boolean shouldIntercept(List<WhiteListBean> whiteList, String incomingNumber) {
+    public static boolean shouldIntercept(List<WhiteListBean> whitelist, List<BlackListBean> blacklist, String incomingNumber) {
         if (incomingNumber == null) {
             return true;
         }
-        if (incomingNumber.startsWith("0")) {
-            if (whiteList == null) return true;
-            for (WhiteListBean bean : whiteList) {
-                if (bean.getNumber().equals(incomingNumber.substring(0, bean.getLen()))) {
-                    return false;
+        //先查询黑名单并拦截
+        if (blacklist != null) {
+            for (BlackListBean bean : blacklist) {
+                if (bean.getNumber().equals(incomingNumber.substring(0,bean.getLen()))){
+                    return true;
                 }
             }
-            return true;
-        } else {
-            return true;
         }
+        //如果是固定电话，不在白名单的都拦截掉
+        if (incomingNumber.startsWith("0")) {
+            if (whitelist != null) {
+                for (WhiteListBean bean : whitelist) {
+                    if (bean.getNumber().equals(incomingNumber.substring(0, bean.getLen()))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 
     /*

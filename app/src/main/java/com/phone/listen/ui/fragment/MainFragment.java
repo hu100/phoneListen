@@ -1,4 +1,4 @@
-package com.phone.listen.ui;
+package com.phone.listen.ui.fragment;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -50,6 +50,8 @@ public class MainFragment extends BaseFragment {
                 }
                 break;
             case R.id.btn_exit:
+                Intent intent = new Intent(getActivity(), PhoneListenService.class);
+                getActivity().stopService(intent);
                 openNotificationListenSettings();
                 getActivity().finish();
                 android.os.Process.killProcess(android.os.Process.myPid());
