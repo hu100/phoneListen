@@ -58,8 +58,30 @@ public class MainFragment extends BaseFragment {
                 break;
             case R.id.tv_description:
                 openNotificationListenSettings();
+//                startSetting();
                 break;
         }
+    }
+
+    private void startSetting() {
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        String packageName;
+        packageName = "com.huawei.systemmanager";
+        packageName = "com.android.settings";
+        String className = "";
+        className = "com.huawei.permissionmanager.ui.MainActivity";//权限管理
+        className = "com.huawei.systemmanager.optimize.process.ProtectActivity";//清理后台
+        className = "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity";//启动管理
+        className = "com.android.settings.Settings$AccessibilitySettingsActivity";//无障碍开关
+        ComponentName comp = new ComponentName(packageName, className);
+        intent.setComponent(comp);
+        try {
+            startActivity(intent);
+        }catch (Exception e){
+            Log.e(TAG, "startSetting: 跳转出错："+e.getMessage());
+        }
+
     }
 
     private void registerPhoneStateListener() {
