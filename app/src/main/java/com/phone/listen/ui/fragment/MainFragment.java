@@ -2,13 +2,13 @@ package com.phone.listen.ui.fragment;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.phone.listen.R;
 import com.phone.listen.base.BaseFragment;
@@ -31,12 +31,11 @@ public class MainFragment extends BaseFragment {
     TextView mTvDescription;
 
     @AfterViews
-    public void init(){
-
+    public void init() {
     }
 
-    @Click({R.id.btn_register_service,R.id.btn_exit,R.id.tv_description})
-    public void onClick(View view){
+    @Click({R.id.btn_register_service, R.id.btn_exit, R.id.tv_description})
+    public void onClick(View view) {
         int viewId = view.getId();
         switch (viewId) {
             case R.id.btn_register_service:
@@ -72,13 +71,10 @@ public class MainFragment extends BaseFragment {
     private void openNotificationListenSettings() {
         try {
             Intent intent;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            } else {
-                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            }
+            intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             startActivity(intent);
         } catch (Exception e) {
+            Toast.makeText(mContext, "打开界面出错", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

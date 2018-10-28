@@ -27,9 +27,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:text="不拦截手机号码，只拦截座机号码，可以到设置界面设置拦截规则"
-        android:textSize="26sp"
+        android:text="@string/text_description"
+        android:textSize="@dimen/text_size_18"
+        android:textColor="@color/gray"
         android:visibility="gone"
         tools:visibility="visible"/>
 </RelativeLayout>

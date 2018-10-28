@@ -150,8 +150,6 @@ public class TelephonyUtil {
                 }
                 return true;
             }
-        } else {
-            return false;
         }
         return false;
     }

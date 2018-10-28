@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">电话监听</string>
+    <string name="text_description">第一步：点击这段文字，进入“通知使用权”设置界面，打开“电话”监听的开关。\n第二步：前往手机的 设置—电池(启动管理)，找到“电话监听”，设置app可以后台运行。</string>
 </resources>

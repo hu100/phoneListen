@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.phone.listen"
-    tools:ignore="ProtectedPermissions">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.phone.listen"
+          tools:ignore="ProtectedPermissions">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.DEVICE_POWER" />
+    <uses-permission android:name="android.permission.DEVICE_POWER"/>
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
 
     <application
         android:name=".AppApplication"
@@ -24,14 +25,14 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <activity android:name=".ui.SecondActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
             </intent-filter>
         </activity>
 
@@ -40,17 +41,17 @@
             android:label="电话监听"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter android:priority="1000">
-                <action android:name="android.service.notification.NotificationListenerService" />
+                <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
 
         <!--<receiver-->
-            <!--android:name=".receiver.PhoneStateReceiver"-->
-            <!--android:enabled="true">-->
-            <!--<intent-filter android:priority="1000">-->
-                <!--<action android:name="android.intent.action.NEW_OUTGOING_CALL" />-->
-                <!--<action android:name="android.intent.action.PHONE_STATE" />-->
-            <!--</intent-filter>-->
+        <!--android:name=".receiver.PhoneStateReceiver"-->
+        <!--android:enabled="true">-->
+        <!--<intent-filter android:priority="1000">-->
+        <!--<action android:name="android.intent.action.NEW_OUTGOING_CALL" />-->
+        <!--<action android:name="android.intent.action.PHONE_STATE" />-->
+        <!--</intent-filter>-->
         <!--</receiver>-->
     </application>
 
