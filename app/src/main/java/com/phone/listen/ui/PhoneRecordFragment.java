@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import com.phone.listen.AppApplication;
 import com.phone.listen.R;
 import com.phone.listen.adapter.CommonAdapter;
-import com.phone.listen.listener.OnItemClickListener;
 import com.phone.listen.adapter.ViewHolder;
 import com.phone.listen.base.BaseFragment;
 import com.phone.listen.bean.CallRecordBean;
 import com.phone.listen.greendao.CallRecordBeanDao;
+import com.phone.listen.listener.OnItemClickListener;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -49,7 +49,7 @@ public class PhoneRecordFragment extends BaseFragment {
                         .setText(R.id.number_area, bean.getBelongArea())
                         .setText(R.id.phone_date, bean.getDate())
                         .setText(R.id.phone_time, bean.getTime())
-                        .setText(R.id.intercept_status, bean.getNeedIntercept()?(bean.getIntercepted() ? "拦截\n成功" : "拦截\n失败"):"无需\n拦截")
+                        .setText(R.id.intercept_status, bean.getNeedIntercept() ? (bean.getIntercepted() ? "拦截\n成功" : "拦截\n失败") : "无需\n拦截")
                         .setTextColor(R.id.intercept_status, bean.getIntercepted() ? Color.BLACK : Color.RED);
             }
         };
@@ -87,7 +87,10 @@ public class PhoneRecordFragment extends BaseFragment {
     @Background
     public void getPhoneRecord() {
         mRecordList.clear();
-        mRecordList.addAll(mRecordBeanDao.loadAll());
+        List<CallRecordBean> list = mRecordBeanDao.queryBuilder()
+                .orderDesc(CallRecordBeanDao.Properties.Id)
+                .list();
+        mRecordList.addAll(list);
         getActivity().runOnUiThread(() -> {
             mCallRecordAdapter.notifyDataSetChanged();
         });

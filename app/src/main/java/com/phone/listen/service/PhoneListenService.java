@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
@@ -23,6 +24,11 @@ import com.phone.listen.listener.CustomPhoneStateListener;
 import com.phone.listen.listener.ScreenListener;
 import com.phone.listen.receiver.ScreenReceiver;
 import com.phone.listen.ui.MainActivity_;
+import com.phone.listen.util.Constant;
+import com.phone.listen.util.FileUtil;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 来去电监听服务
@@ -37,6 +43,7 @@ public class PhoneListenService extends NotificationListenerService {
     public static final String ACTION_REGISTER_LISTENER = "action_register_listener";
     private NotificationManager mNotificationManager;
     private Notification mNotification;
+    private PowerManager.WakeLock mWakeLock;
 
     @Override
     public void onCreate() {
@@ -44,6 +51,31 @@ public class PhoneListenService extends NotificationListenerService {
         Log.e(TAG, "onCreate");
         initNotify();
         initScreenReceiver();
+        new Thread(() -> {
+            while (true) {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                FileUtil.writeToFile(Constant.LOG_PATH, "心跳.txt", sdf.format(new Date()), true);
+                try {
+                    Thread.sleep(1000 * 60 * 10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void initWakeLock() {
+        if (mWakeLock != null) return;
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+        mWakeLock.acquire();
+    }
+
+    private void releaseWakeLock() {
+        if (mWakeLock != null) {
+            mWakeLock.release();
+            mWakeLock = null;
+        }
     }
 
     private void initScreenReceiver() {
@@ -56,16 +88,27 @@ public class PhoneListenService extends NotificationListenerService {
         screenReceiver.setScreenListener(new ScreenListener() {
             @Override
             public void onScreenOn() {
-                mNotificationManager.cancel(NOTIFY_ID2);
+
             }
 
             @Override
             public void onScreenOff() {
-                mNotificationManager.notify(NOTIFY_ID2, mNotification);
+                SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
+                String time = sdf1.format(new Date());
+                String[] split = time.split(":");
+                int hour = Integer.parseInt(split[0]);
+                Log.e(TAG, "onScreenOff: " + time + "..." + hour);
+                if (hour < 8 || hour > 22) {
+                    releaseWakeLock();
+                } else {
+                    initWakeLock();
+                }
+
             }
 
             @Override
             public void onUserPresent() {
+
             }
         });
     }

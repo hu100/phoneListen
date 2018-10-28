@@ -32,9 +32,6 @@ public class TelephonyUtil {
             if (telephonyService != null) {
                 endCallSuccess = telephonyService.endCall();
                 Log.e(TAG, "endCall: " + endCallSuccess);
-                if (!endCallSuccess) {
-                    endCallSuccess = endCall2();
-                }
             }
         } catch (RemoteException e) {
             Log.e(TAG, "endCall remoteException: " + e.getMessage());
@@ -143,7 +140,7 @@ public class TelephonyUtil {
             }
             return true;
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -160,7 +157,10 @@ public class TelephonyUtil {
         } else {
             prefix = zone.substring(0, 4);
         }
-        List<TelephoneNumberZone> zones = zoneDao.queryBuilder().where(TelephoneNumberZoneDao.Properties.Zone.eq(prefix)).build().list();
+        List<TelephoneNumberZone> zones = zoneDao.queryBuilder()
+                .where(TelephoneNumberZoneDao.Properties.Zone.eq(prefix))
+                .build()
+                .list();
         if (zones != null && zones.size() > 0) {
             return zones.get(0);
         } else {

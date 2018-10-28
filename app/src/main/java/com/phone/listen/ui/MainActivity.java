@@ -58,7 +58,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.CALL_PHONE,
             Manifest.permission.PROCESS_OUTGOING_CALLS,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WAKE_LOCK
     };
 
     @Override
