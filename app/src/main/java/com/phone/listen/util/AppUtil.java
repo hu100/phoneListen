@@ -9,9 +9,13 @@ import android.util.Log;
 import java.util.List;
 
 public class AppUtil {
+
+    //获取当前运行app的报名
     private void getTopApp(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UsageStatsManager m = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+            String serviceName = "";
+//            serviceName = Context.USAGE_STATS_SERVICE;
+            UsageStatsManager m = (UsageStatsManager) context.getSystemService(serviceName);
             if (m != null) {
                 long now = System.currentTimeMillis(); //获取60秒之内的应用数据
                 List<UsageStats> stats = m.queryUsageStats(UsageStatsManager.INTERVAL_BEST, now - 60 * 1000, now);
