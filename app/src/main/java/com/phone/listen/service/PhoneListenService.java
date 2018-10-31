@@ -121,7 +121,7 @@ public class PhoneListenService extends NotificationListenerService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand:");
         registerPhoneStateListener();
-        return START_STICKY;
+        return super.onStartCommand(intent,flags,startId);
     }
 
     @Override

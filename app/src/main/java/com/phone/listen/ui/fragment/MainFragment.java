@@ -1,6 +1,7 @@
 package com.phone.listen.ui.fragment;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.phone.listen.BuildConfig;
 import com.phone.listen.R;
 import com.phone.listen.base.BaseFragment;
 import com.phone.listen.service.PhoneListenService;
@@ -58,13 +60,12 @@ public class MainFragment extends BaseFragment {
                 break;
             case R.id.tv_description:
                 openNotificationListenSettings();
-//                startSetting();
                 break;
         }
     }
 
     private void startSetting() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         String packageName;
         packageName = "com.huawei.systemmanager";
@@ -78,8 +79,8 @@ public class MainFragment extends BaseFragment {
         intent.setComponent(comp);
         try {
             startActivity(intent);
-        }catch (Exception e){
-            Log.e(TAG, "startSetting: 跳转出错："+e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "startSetting: 跳转出错：" + e.getMessage());
         }
 
     }
@@ -94,6 +95,8 @@ public class MainFragment extends BaseFragment {
         try {
             Intent intent;
             intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+//            intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+//            intent.setData(Uri.parse("package:"+mContext.getPackageName()));
             startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(mContext, "打开界面出错", Toast.LENGTH_SHORT).show();
@@ -117,6 +120,20 @@ public class MainFragment extends BaseFragment {
                 i += 1;
             }
         }
+        return false;
+    }
+
+    //检测辅助功能权限
+    public boolean checkAccessible(Context context) {
+        String services = Settings.Secure.getString(context.getContentResolver(), "enabled_accessibility_services");
+        String[] strings = services.split(":");
+        for (String s :strings){
+            if (s.contains(BuildConfig.APPLICATION_ID)){
+                return true;
+            }
+        }
+        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        startActivity(intent);
         return false;
     }
 }
